@@ -8,24 +8,36 @@ body {
     background-size: cover !important;
 }
 
-/* Hide the navbar/banner ONLY on login page */
-body[data-route="login"] .navbar {
+/* More aggressive navbar hiding for login page */
+body[data-route="login"] .navbar,
+[data-route="login"] .navbar,
+.for-login .navbar,
+.navbar-default,
+body[data-route="login"] header,
+[data-route="login"] header {
     display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
-/* Adjust padding only on login page */
+/* Darker login text */
+.page-card-head h4 {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
+}
+
+/* Remove top spacing */
 body[data-route="login"] {
     padding-top: 0 !important;
+    margin-top: 0 !important;
 }
 
-/* Hide breadcrumbs only on login page */
-body[data-route="login"] .navbar-breadcrumbs {
-    display: none !important;
-}
-
-/* Adjust content spacing only on login page */
+/* Remove any residual header space */
 body[data-route="login"] .page-content {
     margin-top: 0 !important;
+    padding-top: 2rem !important;
 }
 
 body[data-route="login"] .page-content-wrapper {
@@ -59,4 +71,17 @@ body[data-route="login"]::before {
 .for-forgot {
     position: relative;
     z-index: 2;
+}
+
+/* Additional navbar hiding techniques */
+.web-footer {
+    display: none !important;
+}
+
+#navbar-breadcrumbs {
+    display: none !important;
+}
+
+[data-route="login"] .main-section {
+    margin-top: 0 !important;
 }
