@@ -1,27 +1,36 @@
 .footer-powered{
 	display: none!important;
 }
-.page-card-container {
+/* Target the outer container */
+body {
     background: url('/assets/whitelabel/images/login-background.png') no-repeat center center fixed;
     background-size: cover;
-    min-height: 100vh;
 }
 
-/* Optional: Add some overlay to ensure text readability */
-.page-card-container::before {
+/* Make the login form container slightly transparent */
+.for-login .login-content.page-card {
+    background: rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 2;
+}
+
+/* Optional: Add overlay for better text readability */
+body::before {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(255, 255, 255, 0.7); /* Adjust opacity as needed */
+    background: rgba(255, 255, 255, 0.5); /* Adjust opacity as needed */
     z-index: 1;
 }
 
-/* Ensure the login card stays above the overlay */
-.page-card {
+/* Ensure the login sections stay above overlay */
+.for-login,
+.for-email-login,
+.for-signup,
+.for-forgot {
     position: relative;
     z-index: 2;
-    background: rgba(255, 255, 255, 0.9); /* Make card slightly transparent */
 }
