@@ -3,8 +3,8 @@
 }
 /* Target the outer container */
 body {
-    background: url('/assets/whitelabel/images/login-background.png') no-repeat center center fixed;
-    background-size: cover;
+    background: url('/assets/whitelabel/images/login-background.PNG') no-repeat center center fixed !important;
+    background-size: cover !important;
 }
 
 /* Make the login form container slightly transparent */
