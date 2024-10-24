@@ -8,18 +8,30 @@ body {
     background-size: cover !important;
 }
 
-/* More aggressive navbar hiding for login page */
+/* Comprehensive navbar hiding */
 body[data-route="login"] .navbar,
 [data-route="login"] .navbar,
 .for-login .navbar,
 .navbar-default,
 body[data-route="login"] header,
-[data-route="login"] header {
+[data-route="login"] header,
+nav.navbar.navbar-light.navbar-expand-lg,
+.navbar.navbar-light.navbar-expand-lg,
+nav[class*="navbar"],
+.navbar-light {
     display: none !important;
     height: 0 !important;
     min-height: 0 !important;
     opacity: 0 !important;
     visibility: hidden !important;
+}
+
+/* Target container within navbar */
+.container .navbar-brand,
+.container .navbar-toggler,
+#navbarSupportedContent,
+#language-switcher {
+    display: none !important;
 }
 
 /* Darker login text */
@@ -73,7 +85,7 @@ body[data-route="login"]::before {
     z-index: 2;
 }
 
-/* Additional navbar hiding techniques */
+/* Additional hiding techniques */
 .web-footer {
     display: none !important;
 }
@@ -84,4 +96,18 @@ body[data-route="login"]::before {
 
 [data-route="login"] .main-section {
     margin-top: 0 !important;
+}
+
+/* Hide any flex containers that might be holding the navbar */
+.flex[data-route="login"],
+div.flex {
+    display: none !important;
+}
+
+/* Ensure no space at top of page */
+[data-path="login"],
+div[data-page-route="login"],
+#page-login {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
