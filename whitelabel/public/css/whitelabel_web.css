@@ -1,10 +1,36 @@
-.footer-powered{
-	display: none!important;
+.footer-powered {
+    display: none !important;
 }
+
 /* Target the outer container */
 body {
     background: url('/assets/whitelabel/images/login-background.PNG') no-repeat center center fixed !important;
     background-size: cover !important;
+}
+
+/* Hide the navbar/banner ONLY on login page */
+body[data-route="login"] .navbar {
+    display: none !important;
+}
+
+/* Adjust padding only on login page */
+body[data-route="login"] {
+    padding-top: 0 !important;
+}
+
+/* Hide breadcrumbs only on login page */
+body[data-route="login"] .navbar-breadcrumbs {
+    display: none !important;
+}
+
+/* Adjust content spacing only on login page */
+body[data-route="login"] .page-content {
+    margin-top: 0 !important;
+}
+
+body[data-route="login"] .page-content-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 
 /* Make the login form container slightly transparent */
@@ -15,14 +41,14 @@ body {
 }
 
 /* Optional: Add overlay for better text readability */
-body::before {
+body[data-route="login"]::before {
     content: '';
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(255, 255, 255, 0.5); /* Adjust opacity as needed */
+    background: rgba(255, 255, 255, 0.5);
     z-index: 1;
 }
 
