@@ -1,3 +1,27 @@
 .footer-powered{
 	display: none!important;
 }
+.page-card-container {
+    background: url('/assets/whitelabel/images/login-background.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* Optional: Add some overlay to ensure text readability */
+.page-card-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.7); /* Adjust opacity as needed */
+    z-index: 1;
+}
+
+/* Ensure the login card stays above the overlay */
+.page-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9); /* Make card slightly transparent */
+}
