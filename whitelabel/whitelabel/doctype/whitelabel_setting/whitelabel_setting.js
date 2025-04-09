@@ -4,10 +4,10 @@ frappe.ui.form.on('Whitelabel Setting', {
         frappe.call({
             method: "whitelabel.api.update_login_background",
             callback: function(r) {
+                // Always clear cache regardless of success or failure
+                frappe.ui.toolbar.clear_cache();
+                
                 if (r.message && r.message.success) {
-                    // Clear cache only after successful image update
-                    frappe.ui.toolbar.clear_cache();
-                    
                     frappe.show_alert({
                         message: __("Login background updated successfully"),
                         indicator: 'green'
