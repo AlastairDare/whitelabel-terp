@@ -146,4 +146,3 @@ def update_login_background():
     except Exception as e:
         frappe.log_error(f"Failed to update login background: {str(e)}", "Whitelabel Debug")
         return {"success": False, "message": str(e)}
-

@@ -62,70 +62,43 @@ class WhitelabelSetting(Document):
 		system_settings_doc.disable_standard_email_footer = self.disable_standard_footer
 		system_settings_doc.hide_footer_in_auto_email_reports = self.disable_standard_footer
 	
-	def copy_background_to_assets(self):
-		"""Copy the background image to assets folder whenever whitelabel settings is saved"""
-		if self.background_image:
-			try:
-				# Get the source file path
-				source_path = os.path.join(get_files_path(), os.path.basename(self.background_image))
-				frappe.log_error(f"Source path: {source_path}", "Whitelabel Debug")
-				
-				if not os.path.exists(source_path):
-					frappe.log_error(f"Source file does not exist: {source_path}", "Whitelabel Error")
-					return False
-				
-				# Get source file size for comparison
-				source_size = os.path.getsize(source_path)
-				frappe.log_error(f"Source file size: {source_size} bytes", "Whitelabel Debug")
-				
-				# Create the destination directory if it doesn't exist
-				assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
-				os.makedirs(assets_dir, exist_ok=True)
-				
-				# Set destination path with fixed filename
-				dest_path = os.path.join(assets_dir, 'login-background.PNG')
-				
-				# Check if destination file exists and get its size
-				if os.path.exists(dest_path):
-					old_size = os.path.getsize(dest_path)
-					frappe.log_error(f"Existing file size: {old_size} bytes", "Whitelabel Debug")
-					
-					# If sizes are identical, we may have the same file
-					if old_size == source_size:
-						# Compare file content to be absolutely sure
-						import filecmp
-						if filecmp.cmp(source_path, dest_path, shallow=False):
-							frappe.log_error("Source and destination files are identical, no need to copy", "Whitelabel Debug")
-							return True
-					
-					# Delete existing file before copying
-					try:
-						os.remove(dest_path)
-						frappe.log_error("Successfully deleted existing file", "Whitelabel Debug")
-					except Exception as del_err:
-						frappe.log_error(f"Error deleting existing file: {str(del_err)}", "Whitelabel Error")
-				
-				# Copy the file
-				shutil.copy2(source_path, dest_path)
-				
-				# Verify copy succeeded and check new file size
-				if os.path.exists(dest_path):
-					new_size = os.path.getsize(dest_path)
-					frappe.log_error(f"New file size: {new_size} bytes", "Whitelabel Debug")
-					
-					# Check if file size changed
-					if 'old_size' in locals() and old_size == new_size:
-						frappe.log_error("Warning: File size didn't change after copy", "Whitelabel Debug")
-				else:
-					frappe.log_error("Copy failed: Destination file doesn't exist", "Whitelabel Error")
-					return False
-				
-				frappe.db.commit()
-				return True
-			except Exception as e:
-				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Error")
-				return False
-		return False
-
-
-		
+	
+def copy_background_to_assets(self):
+    """Copy the background image to assets folder whenever whitelabel settings is saved"""
+    if self.background_image:
+        try:
+            # Get the source file path
+            source_path = os.path.join(get_files_path(), os.path.basename(self.background_image))
+            frappe.log_error(f"Source path: {source_path}", "Whitelabel Debug")
+            
+            if not os.path.exists(source_path):
+                frappe.log_error(f"Source file does not exist: {source_path}", "Whitelabel Error")
+                return False
+            
+            # Create the destination directory if it doesn't exist
+            assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
+            os.makedirs(assets_dir, exist_ok=True)
+            
+            # Set destination path with fixed filename
+            dest_path = os.path.join(assets_dir, 'login-background.PNG')
+            
+            # Delete existing file if it exists
+            if os.path.exists(dest_path):
+                os.remove(dest_path)
+                frappe.log_error("Successfully deleted existing file", "Whitelabel Debug")
+            
+            # Copy the file
+            shutil.copy2(source_path, dest_path)
+            frappe.log_error(f"Copied file to {dest_path}", "Whitelabel Debug")
+            
+            # Verify copy succeeded
+            if not os.path.exists(dest_path):
+                frappe.log_error("Copy failed: Destination file doesn't exist", "Whitelabel Error")
+                return False
+            
+            frappe.db.commit()
+            return True
+        except Exception as e:
+            frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Error")
+            return False
+    return False
