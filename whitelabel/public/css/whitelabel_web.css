@@ -3,12 +3,7 @@
 }
 
 body {
-    /* Default background if no custom one is set */
     background: url('/assets/whitelabel/images/login-background.PNG') no-repeat center center fixed !important;
-    background-size: cover !important;
-}
-
-body.custom-background {
     background-size: cover !important;
 }
 

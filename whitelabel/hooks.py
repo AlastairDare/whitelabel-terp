@@ -34,3 +34,8 @@ fixtures = [
     {"dt": "Website Settings", "filters": [["name", "=", "Website Settings"]]}
 ]
 
+doc_events = {
+    "Whitelabel Setting": {
+        "after_save": "whitelabel.whitelabel.copy_background_to_assets"
+    }
+}
