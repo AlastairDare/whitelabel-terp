@@ -97,19 +97,9 @@ def update_login_background():
             if result and isinstance(result, dict) and result.get("success"):
                 # Try to clear server cache
                 try:
-                    # Try different cache clearing methods
-                    from frappe.utils.assets import clear_all_cache
-                    clear_all_cache()
-                    frappe.log_error("Cleared asset cache", "Whitelabel Debug")
-                    
-                    from frappe.website.utils import clear_cache
-                    clear_cache()
-                    frappe.log_error("Cleared website cache", "Whitelabel Debug")
-                    
-                    # Also try to rebuild assets
-                    from frappe.utils.assets import build
-                    build(hard=True)
-                    frappe.log_error("Rebuilt assets with hard=True", "Whitelabel Debug")
+                    # Clear asset cache using the standard Frappe function
+                    frappe.clear_cache()
+                    frappe.log_error("Cleared Frappe cache", "Whitelabel Debug")
                 except Exception as cache_err:
                     frappe.log_error(f"Error clearing cache: {str(cache_err)}", "Whitelabel Debug")
                 
