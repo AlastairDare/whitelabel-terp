@@ -66,23 +66,53 @@ class WhitelabelSetting(Document):
 		"""Copy the background image to assets folder whenever whitelabel settings is saved"""
 		if self.background_image:
 			try:
+				# Log for debugging - all to Error Log List in UI
+				frappe.log_error(f"Background image path: {self.background_image}", "Whitelabel Debug")
+				
 				# Get the source file path
 				source_path = os.path.join(get_files_path(), os.path.basename(self.background_image))
 				
+				# Log source path for debugging
+				frappe.log_error(f"Source path: {source_path}", "Whitelabel Debug")
+				frappe.log_error(f"Source exists: {os.path.exists(source_path)}", "Whitelabel Debug")
+				
 				# Create the destination directory if it doesn't exist
 				assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
+				
+				# Log destination directory
+				frappe.log_error(f"Destination directory: {assets_dir}", "Whitelabel Debug")
+				frappe.log_error(f"Destination exists: {os.path.exists(assets_dir)}", "Whitelabel Debug")
+				
+				# Create directory if needed
 				os.makedirs(assets_dir, exist_ok=True)
 				
 				# Set destination path with fixed filename
 				dest_path = os.path.join(assets_dir, 'login-background.PNG')
 				
-				# Copy the file
+				# Log destination path
+				frappe.log_error(f"Destination path: {dest_path}", "Whitelabel Debug")
+				
+				# Try to copy the file
 				shutil.copy2(source_path, dest_path)
+				
+				# Verify copy succeeded
+				frappe.log_error(f"Copy succeeded: {os.path.exists(dest_path)}", "Whitelabel Debug")
+				
+				# If successful, try to log file permissions
+				if os.path.exists(dest_path):
+					import stat
+					try:
+						file_stat = os.stat(dest_path)
+						permissions = stat.filemode(file_stat.st_mode)
+						frappe.log_error(f"File permissions: {permissions}", "Whitelabel Debug")
+						frappe.log_error(f"File size: {file_stat.st_size} bytes", "Whitelabel Debug")
+					except Exception as stat_err:
+						frappe.log_error(f"Could not get file stats: {str(stat_err)}", "Whitelabel Debug")
 				
 				frappe.db.commit()
 				return True
 			except Exception as e:
-				frappe.log_error(f"Failed to copy background image: {str(e)}")
+				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Background Update")
 				return False
 		return False
 
