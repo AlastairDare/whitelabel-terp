@@ -74,43 +74,60 @@ class WhitelabelSetting(Document):
 					frappe.log_error(f"Source file does not exist: {source_path}", "Whitelabel Error")
 					return False
 				
+				# Get the app path for whitelabel
+				from frappe.app import get_site_path, get_app_path
+				
+				try:
+					# Try to get the app path for 'whitelabel'
+					app_path = get_app_path('whitelabel')
+					frappe.log_error(f"App path: {app_path}", "Whitelabel Debug")
+				except ImportError:
+					frappe.log_error("Could not get app path for 'whitelabel', trying to find it manually", "Whitelabel Debug")
+					# Try to manually detect app path
+					bench_path = frappe.utils.get_bench_path()
+					app_path = os.path.join(bench_path, 'apps', 'whitelabel')
+					if not os.path.exists(app_path):
+						frappe.log_error(f"App path does not exist: {app_path}", "Whitelabel Error")
+						return False
+				
 				# Create the destination directory if it doesn't exist
-				assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
-				os.makedirs(assets_dir, exist_ok=True)
+				public_path = os.path.join(app_path, 'whitelabel', 'public', 'images')
+				os.makedirs(public_path, exist_ok=True)
+				frappe.log_error(f"Created public path: {public_path}", "Whitelabel Debug")
 				
-				# Find an available incremental filename
-				suffix = 1
-				while True:
-					test_path = os.path.join(assets_dir, f'login-background-{suffix}.PNG')
-					if not os.path.exists(test_path):
-						break
-					suffix += 1
-					
-				# Create a new incremental file
-				incremental_path = os.path.join(assets_dir, f'login-background-{suffix}.PNG')
+				# Set destination path with fixed filename
+				dest_path = os.path.join(public_path, 'login-background.PNG')
 				
-				# Copy to both the standard path and incremental path
-				shutil.copy2(source_path, incremental_path)
+				# Copy the file
+				shutil.copy2(source_path, dest_path)
+				frappe.log_error(f"Copied file to {dest_path}", "Whitelabel Debug")
 				
-				# Also update the standard path for normal operation
-				standard_path = os.path.join(assets_dir, 'login-background.PNG')
-				shutil.copy2(source_path, standard_path)
+				# Create a timestamp to log
+				import time
+				timestamp = int(time.time())
 				
-				frappe.log_error(f"Created incremental file: {incremental_path}", "Whitelabel Debug")
-				frappe.log_error(f"Web accessible URL: /assets/whitelabel/images/login-background-{suffix}.PNG", "Whitelabel Debug")
+				frappe.log_error(f"Image should be accessible via: /assets/whitelabel/images/login-background.PNG?v={timestamp}", "Whitelabel Debug")
 				
-				# Try to access the file via HTTP to verify
+				# Try to verify file is accessible
 				import requests
 				try:
 					site_url = frappe.utils.get_url()
-					test_url = f"{site_url}/assets/whitelabel/images/login-background-{suffix}.PNG"
+					test_url = f"{site_url}/assets/whitelabel/images/login-background.PNG?v={timestamp}"
 					response = requests.head(test_url, timeout=5)
-					frappe.log_error(f"HTTP Status for incremental file: {response.status_code}", "Whitelabel Debug")
+					frappe.log_error(f"HTTP Status: {response.status_code}, Content-Type: {response.headers.get('Content-Type', 'unknown')}", "Whitelabel Debug")
 				except Exception as req_err:
-					frappe.log_error(f"Error checking incremental file: {str(req_err)}", "Whitelabel Debug")
+					frappe.log_error(f"Error checking file: {str(req_err)}", "Whitelabel Debug")
+				
+				# After copying, rebuild the assets
+				try:
+					from frappe.utils.assets import build
+					build()
+					frappe.log_error("Rebuilt assets", "Whitelabel Debug")
+				except ImportError:
+					frappe.log_error("Could not rebuild assets", "Whitelabel Debug")
 				
 				frappe.db.commit()
-				return {"success": True, "suffix": suffix}
+				return {"success": True, "timestamp": timestamp}
 			except Exception as e:
 				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Error")
 				return False
