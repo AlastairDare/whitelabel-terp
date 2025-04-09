@@ -62,26 +62,26 @@ class WhitelabelSetting(Document):
 		system_settings_doc.disable_standard_email_footer = self.disable_standard_footer
 		system_settings_doc.hide_footer_in_auto_email_reports = self.disable_standard_footer
 	
-	def copy_background_to_assets(doc, method=None):
-		"""Copy the background image to assets folder whenever whitelabel settings is saved"""
-		if doc.background_image:
-			# Get the source file path
-			source_path = os.path.join(get_files_path(), os.path.basename(doc.background_image))
-			
-			# Create the destination directory if it doesn't exist
-			assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
-			os.makedirs(assets_dir, exist_ok=True)
-			
-			# Set destination path with fixed filename
-			dest_path = os.path.join(assets_dir, 'login-background.png')
-			
-			# Copy the file
-			try:
-				shutil.copy2(source_path, dest_path)
-				frappe.db.commit()
-				frappe.msgprint("Login background image updated successfully")
-			except Exception as e:
-				frappe.log_error(f"Failed to copy background image: {str(e)}")
+def copy_background_to_assets(doc, method=None):
+	"""Copy the background image to assets folder whenever whitelabel settings is saved"""
+	if doc.background_image:
+		# Get the source file path
+		source_path = os.path.join(get_files_path(), os.path.basename(doc.background_image))
+		
+		# Create the destination directory if it doesn't exist
+		assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
+		os.makedirs(assets_dir, exist_ok=True)
+		
+		# Set destination path with fixed filename
+		dest_path = os.path.join(assets_dir, 'login-background.png')
+		
+		# Copy the file
+		try:
+			shutil.copy2(source_path, dest_path)
+			frappe.db.commit()
+			frappe.msgprint("Login background image updated successfully")
+		except Exception as e:
+			frappe.log_error(f"Failed to copy background image: {str(e)}")
 
 
 		
