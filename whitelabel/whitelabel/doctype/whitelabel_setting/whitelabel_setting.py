@@ -66,53 +66,64 @@ class WhitelabelSetting(Document):
 		"""Copy the background image to assets folder whenever whitelabel settings is saved"""
 		if self.background_image:
 			try:
-				# Log for debugging - all to Error Log List in UI
-				frappe.log_error(f"Background image path: {self.background_image}", "Whitelabel Debug")
-				
 				# Get the source file path
 				source_path = os.path.join(get_files_path(), os.path.basename(self.background_image))
-				
-				# Log source path for debugging
 				frappe.log_error(f"Source path: {source_path}", "Whitelabel Debug")
-				frappe.log_error(f"Source exists: {os.path.exists(source_path)}", "Whitelabel Debug")
+				
+				if not os.path.exists(source_path):
+					frappe.log_error(f"Source file does not exist: {source_path}", "Whitelabel Error")
+					return False
+				
+				# Get source file size for comparison
+				source_size = os.path.getsize(source_path)
+				frappe.log_error(f"Source file size: {source_size} bytes", "Whitelabel Debug")
 				
 				# Create the destination directory if it doesn't exist
 				assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
-				
-				# Log destination directory
-				frappe.log_error(f"Destination directory: {assets_dir}", "Whitelabel Debug")
-				frappe.log_error(f"Destination exists: {os.path.exists(assets_dir)}", "Whitelabel Debug")
-				
-				# Create directory if needed
 				os.makedirs(assets_dir, exist_ok=True)
 				
 				# Set destination path with fixed filename
 				dest_path = os.path.join(assets_dir, 'login-background.PNG')
 				
-				# Log destination path
-				frappe.log_error(f"Destination path: {dest_path}", "Whitelabel Debug")
+				# Check if destination file exists and get its size
+				if os.path.exists(dest_path):
+					old_size = os.path.getsize(dest_path)
+					frappe.log_error(f"Existing file size: {old_size} bytes", "Whitelabel Debug")
+					
+					# If sizes are identical, we may have the same file
+					if old_size == source_size:
+						# Compare file content to be absolutely sure
+						import filecmp
+						if filecmp.cmp(source_path, dest_path, shallow=False):
+							frappe.log_error("Source and destination files are identical, no need to copy", "Whitelabel Debug")
+							return True
+					
+					# Delete existing file before copying
+					try:
+						os.remove(dest_path)
+						frappe.log_error("Successfully deleted existing file", "Whitelabel Debug")
+					except Exception as del_err:
+						frappe.log_error(f"Error deleting existing file: {str(del_err)}", "Whitelabel Error")
 				
-				# Try to copy the file
+				# Copy the file
 				shutil.copy2(source_path, dest_path)
 				
-				# Verify copy succeeded
-				frappe.log_error(f"Copy succeeded: {os.path.exists(dest_path)}", "Whitelabel Debug")
-				
-				# If successful, try to log file permissions
+				# Verify copy succeeded and check new file size
 				if os.path.exists(dest_path):
-					import stat
-					try:
-						file_stat = os.stat(dest_path)
-						permissions = stat.filemode(file_stat.st_mode)
-						frappe.log_error(f"File permissions: {permissions}", "Whitelabel Debug")
-						frappe.log_error(f"File size: {file_stat.st_size} bytes", "Whitelabel Debug")
-					except Exception as stat_err:
-						frappe.log_error(f"Could not get file stats: {str(stat_err)}", "Whitelabel Debug")
+					new_size = os.path.getsize(dest_path)
+					frappe.log_error(f"New file size: {new_size} bytes", "Whitelabel Debug")
+					
+					# Check if file size changed
+					if 'old_size' in locals() and old_size == new_size:
+						frappe.log_error("Warning: File size didn't change after copy", "Whitelabel Debug")
+				else:
+					frappe.log_error("Copy failed: Destination file doesn't exist", "Whitelabel Error")
+					return False
 				
 				frappe.db.commit()
 				return True
 			except Exception as e:
-				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Background Update")
+				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Error")
 				return False
 		return False
 

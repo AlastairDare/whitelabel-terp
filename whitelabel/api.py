@@ -91,30 +91,50 @@ def update_login_background():
     try:
         doc = frappe.get_doc("Whitelabel Setting", "Whitelabel Setting")
         
-        # Log for debugging - all to Error Log List in UI
-        frappe.log_error(f"Updating login background with image: {doc.background_image}", "Whitelabel Debug")
-        
         if doc.background_image:
             success = doc.copy_background_to_assets()
             
-            # Log result
-            frappe.log_error(f"Background update success: {success}", "Whitelabel Debug")
-            
             if success:
-                # Try to verify the file from web path
+                # Try to clear server cache
+                try:
+                    # Clear website cache
+                    from frappe.website.utils import clear_cache
+                    clear_cache()
+                    
+                    # Clear asset cache if available
+                    try:
+                        from frappe.utils.change_log import clear_cache as clear_asset_cache
+                        clear_asset_cache()
+                        frappe.log_error("Cleared asset cache", "Whitelabel Debug")
+                    except ImportError:
+                        pass
+                    
+                    # Force assets to rebuild
+                    try:
+                        from frappe.utils.assets import clear_all_cache
+                        clear_all_cache()
+                        frappe.log_error("Cleared all asset cache", "Whitelabel Debug")
+                    except ImportError:
+                        pass
+                    
+                except Exception as cache_err:
+                    frappe.log_error(f"Error clearing cache: {str(cache_err)}", "Whitelabel Debug")
+                
+                # Verify file is accessible
                 import requests
                 try:
                     site_url = frappe.utils.get_url()
                     image_url = f"{site_url}/assets/whitelabel/images/login-background.PNG"
-                    frappe.log_error(f"Checking image URL: {image_url}", "Whitelabel Debug")
-                    
                     response = requests.head(image_url, timeout=5)
-                    frappe.log_error(
-                        f"HTTP Status: {response.status_code}, " +
-                        f"Content-Type: {response.headers.get('Content-Type', 'unknown')}, " +
-                        f"Content-Length: {response.headers.get('Content-Length', 'unknown')}",
-                        "Whitelabel Debug"
-                    )
+                    
+                    if response.status_code == 200:
+                        frappe.log_error(
+                            f"Image accessible: HTTP Status {response.status_code}, " +
+                            f"Content-Length: {response.headers.get('Content-Length', 'unknown')}",
+                            "Whitelabel Debug"
+                        )
+                    else:
+                        frappe.log_error(f"Image not accessible: HTTP Status {response.status_code}", "Whitelabel Debug")
                 except Exception as req_err:
                     frappe.log_error(f"Error checking image URL: {str(req_err)}", "Whitelabel Debug")
                 
@@ -122,7 +142,6 @@ def update_login_background():
             else:
                 return {"success": False, "message": "Failed to update background. Check Error Log for details."}
         else:
-            frappe.log_error("No background image set", "Whitelabel Debug")
             return {"success": False, "message": "No background image set"}
     except Exception as e:
         frappe.log_error(f"Failed to update login background: {str(e)}", "Whitelabel Debug")
