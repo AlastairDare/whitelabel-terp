@@ -1,3 +1,4 @@
+//Working!
 frappe.ui.form.on('Whitelabel Setting', {
     after_save: function(frm) {
         // Call our API endpoint to update the background image
