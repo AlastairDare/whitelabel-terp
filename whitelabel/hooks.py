@@ -33,9 +33,3 @@ fixtures = [
     {"dt": "Custom Field", "filters": [["Translation","source_text","like","%ERPNext%"]]},
     {"dt": "Website Settings", "filters": [["name", "=", "Website Settings"]]}
 ]
-
-doc_events = {
-    "Whitelabel Setting": {
-        "on_update": "whitelabel.whitelabel.doctype.whitelabel_setting.whitelabel_setting.copy_background_to_assets"
-    }
-}

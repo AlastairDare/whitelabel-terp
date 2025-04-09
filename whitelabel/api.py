@@ -84,4 +84,21 @@ def show_update_popup_update():
 	if update_message:
 		frappe.msgprint(update_message, title=_("New updates are available"), indicator='green')
 		cache.srem("update-user-set", user)
+  
+@frappe.whitelist()
+def update_login_background():
+    """Update the login background image from Whitelabel Setting"""
+    try:
+        doc = frappe.get_doc("Whitelabel Setting", "Whitelabel Setting")
+        if doc.background_image:
+            success = doc.copy_background_to_assets()
+            if success:
+                return {"success": True, "message": "Login background updated successfully"}
+            else:
+                return {"success": False, "message": "Failed to update background"}
+        else:
+            return {"success": False, "message": "No background image set"}
+    except Exception as e:
+        frappe.log_error(f"Failed to update login background: {str(e)}", "Whitelabel Error")
+        return {"success": False, "message": str(e)}
 
