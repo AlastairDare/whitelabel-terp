@@ -36,6 +36,6 @@ fixtures = [
 
 doc_events = {
     "Whitelabel Setting": {
-        "after_save": "whitelabel.whitelabel.copy_background_to_assets"
+        "after_save": "whitelabel.whitelabel.doctype.whitelabel_setting.whitelabel_setting.copy_background_to_assets"
     }
 }
