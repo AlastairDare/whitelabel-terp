@@ -96,24 +96,18 @@ def update_login_background():
             result = doc.copy_background_to_assets()
             
             if result and isinstance(result, dict) and result.get("success"):
-                # Try to clear server cache
-                try:
-                    # Clear asset cache using the standard Frappe function
-                    frappe.clear_cache()
-                    frappe.log_error("Cleared Frappe cache", "Whitelabel Debug")
-                except Exception as cache_err:
-                    frappe.log_error(f"Error clearing cache: {str(cache_err)}", "Whitelabel Debug")
+                # Clear cache
+                frappe.clear_cache()
                 
-                # Return timestamp for cache busting
                 return {
                     "success": True, 
                     "message": "Login background updated successfully",
                     "timestamp": result.get("timestamp", int(time.time()))
                 }
             else:
-                return {"success": False, "message": "Failed to update background. Check Error Log for details."}
+                return {"success": False, "message": "Failed to update background"}
         else:
             return {"success": False, "message": "No background image set"}
     except Exception as e:
-        frappe.log_error(f"Failed to update login background: {str(e)}", "Whitelabel Debug")
+        frappe.log_error(f"Failed to update login background: {str(e)}")
         return {"success": False, "message": str(e)}
