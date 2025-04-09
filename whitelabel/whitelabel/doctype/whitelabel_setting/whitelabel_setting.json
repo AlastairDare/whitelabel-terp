@@ -120,6 +120,12 @@
    "label": "Application Logo"
   },
   {
+    "description": "Client company logo",
+    "fieldname": "client_logo",
+    "fieldtype": "Attach",
+    "label": "Client Logo"
+   },
+  {
    "default": "0",
    "fieldname": "app_logo_set",
    "fieldtype": "Check",

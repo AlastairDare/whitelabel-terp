@@ -30,6 +30,7 @@ after_migrate = ['whitelabel.api.whitelabel_patch']
 boot_session = "whitelabel.api.boot_session"
 
 fixtures = [
-    {"dt": "Custom Field", "filters": [["Translation","source_text","like","%ERPNext%"]]}
+    {"dt": "Custom Field", "filters": [["Translation","source_text","like","%ERPNext%"]]},
+    {"dt": "Website Settings", "filters": [["name", "=", "Website Settings"]]}
 ]
 

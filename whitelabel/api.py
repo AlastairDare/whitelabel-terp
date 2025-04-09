@@ -84,3 +84,17 @@ def show_update_popup_update():
 	if update_message:
 		frappe.msgprint(update_message, title=_("New updates are available"), indicator='green')
 		cache.srem("update-user-set", user)
+
+@frappe.whitelist(allow_guest=True)
+def get_whitelabel_settings_for_login():
+    """Get whitelabel settings for login page"""
+    try:
+        # Allow access without login
+        settings = frappe.get_single("Whitelabel Setting")
+        return {
+            "client_logo": settings.client_logo if settings.client_logo else None
+        }
+    except Exception:
+        return {
+            "client_logo": None
+        }
