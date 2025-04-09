@@ -3,6 +3,7 @@ import frappe
 import json
 from frappe.utils import floor, flt, today, cint
 from frappe import _
+import time
 
 def whitelabel_patch():
 	#delete erpnext welcome page 
