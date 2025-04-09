@@ -6,19 +6,29 @@ $(window).on('load', function() {
         
         // Fetch the whitelabel settings for login page
         $.ajax({
-            url: '/api/method/whitelabel.whitelabel.api.get_whitelabel_settings_for_login',
+            url: '/api/method/whitelabel.api.get_whitelabel_settings_for_login',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                if (data.message && data.message.client_logo) {
-                    var logoUrl = data.message.client_logo;
+                if (data.message && data.message.background_image) {
+                    var bgImageUrl = data.message.background_image;
                     
-                    // Apply the custom background
-                    $("body").css({
-                        "background": "url('" + logoUrl + "') no-repeat center center fixed !important",
-                        "background-size": "cover !important"
-                    });
+                    // Make sure we have an absolute URL by prepending the site URL if needed
+                    if (bgImageUrl.startsWith('/')) {
+                        bgImageUrl = window.location.origin + bgImageUrl;
+                    }
+                    
+                    console.log("Setting background image to:", bgImageUrl);
+                    
+                    // Apply the custom background with !important to override any existing styles
+                    $("body").attr('style', 
+                        "background: url('" + bgImageUrl + "') no-repeat center center fixed !important; " +
+                        "background-size: cover !important"
+                    );
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to fetch whitelabel settings:", error);
             }
         });
     }

@@ -16,6 +16,7 @@
   "logo_setting_section",
   "application_logo",
   "client_logo",
+  "background_image",
   "app_logo_set",
   "column_break_2",
   "logo_height",
@@ -125,6 +126,12 @@
     "fieldname": "client_logo",
     "fieldtype": "Attach",
     "label": "Client Logo"
+   },
+   {
+    "description": "Login page background image",
+    "fieldname": "background_image",
+    "fieldtype": "Attach",
+    "label": "Background Image"
    },
   {
    "default": "0",

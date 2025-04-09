@@ -92,9 +92,9 @@ def get_whitelabel_settings_for_login():
         # Allow access without login
         settings = frappe.get_single("Whitelabel Setting")
         return {
-            "client_logo": settings.client_logo if settings.client_logo else None
+            "background_image": settings.background_image if settings.background_image else None
         }
     except Exception:
         return {
-            "client_logo": None
+            "background_image": None
         }
