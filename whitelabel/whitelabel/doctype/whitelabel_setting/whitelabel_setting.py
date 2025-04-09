@@ -73,7 +73,7 @@ def copy_background_to_assets(doc, method=None):
 		os.makedirs(assets_dir, exist_ok=True)
 		
 		# Set destination path with fixed filename
-		dest_path = os.path.join(assets_dir, 'login-background.png')
+		dest_path = os.path.join(assets_dir, 'login-background.PNG')
 		
 		# Copy the file
 		try:
