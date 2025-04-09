@@ -78,25 +78,39 @@ class WhitelabelSetting(Document):
 				assets_dir = os.path.join(frappe.utils.get_bench_path(), 'sites', frappe.utils.get_site_path(), 'public', 'assets', 'whitelabel', 'images')
 				os.makedirs(assets_dir, exist_ok=True)
 				
-				# Set destination path with fixed filename
-				dest_path = os.path.join(assets_dir, 'login-background.PNG')
+				# Find an available incremental filename
+				suffix = 1
+				while True:
+					test_path = os.path.join(assets_dir, f'login-background-{suffix}.PNG')
+					if not os.path.exists(test_path):
+						break
+					suffix += 1
+					
+				# Create a new incremental file
+				incremental_path = os.path.join(assets_dir, f'login-background-{suffix}.PNG')
 				
-				# Delete existing file if it exists
-				if os.path.exists(dest_path):
-					os.remove(dest_path)
-					frappe.log_error("Successfully deleted existing file", "Whitelabel Debug")
+				# Copy to both the standard path and incremental path
+				shutil.copy2(source_path, incremental_path)
 				
-				# Copy the file
-				shutil.copy2(source_path, dest_path)
-				frappe.log_error(f"Copied file to {dest_path}", "Whitelabel Debug")
+				# Also update the standard path for normal operation
+				standard_path = os.path.join(assets_dir, 'login-background.PNG')
+				shutil.copy2(source_path, standard_path)
 				
-				# Verify copy succeeded
-				if not os.path.exists(dest_path):
-					frappe.log_error("Copy failed: Destination file doesn't exist", "Whitelabel Error")
-					return False
+				frappe.log_error(f"Created incremental file: {incremental_path}", "Whitelabel Debug")
+				frappe.log_error(f"Web accessible URL: /assets/whitelabel/images/login-background-{suffix}.PNG", "Whitelabel Debug")
+				
+				# Try to access the file via HTTP to verify
+				import requests
+				try:
+					site_url = frappe.utils.get_url()
+					test_url = f"{site_url}/assets/whitelabel/images/login-background-{suffix}.PNG"
+					response = requests.head(test_url, timeout=5)
+					frappe.log_error(f"HTTP Status for incremental file: {response.status_code}", "Whitelabel Debug")
+				except Exception as req_err:
+					frappe.log_error(f"Error checking incremental file: {str(req_err)}", "Whitelabel Debug")
 				
 				frappe.db.commit()
-				return True
+				return {"success": True, "suffix": suffix}
 			except Exception as e:
 				frappe.log_error(f"Failed to copy background image: {str(e)}", "Whitelabel Error")
 				return False

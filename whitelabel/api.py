@@ -89,56 +89,26 @@ def show_update_popup_update():
 def update_login_background():
     """Update the login background image from Whitelabel Setting"""
     try:
-        doc = frappe.get_doc("Whitelabel Setting", "Whitelabel Setting")
+        doc = frappe.get_doc("Whitelabel Setting")
         
         if doc.background_image:
-            success = doc.copy_background_to_assets()
+            result = doc.copy_background_to_assets()
             
-            if success:
+            if result and isinstance(result, dict) and result.get("success"):
                 # Try to clear server cache
                 try:
-                    # Clear website cache
-                    from frappe.website.utils import clear_cache
-                    clear_cache()
-                    
-                    # Clear asset cache if available
-                    try:
-                        from frappe.utils.change_log import clear_cache as clear_asset_cache
-                        clear_asset_cache()
-                        frappe.log_error("Cleared asset cache", "Whitelabel Debug")
-                    except ImportError:
-                        pass
-                    
-                    # Force assets to rebuild
-                    try:
-                        from frappe.utils.assets import clear_all_cache
-                        clear_all_cache()
-                        frappe.log_error("Cleared all asset cache", "Whitelabel Debug")
-                    except ImportError:
-                        pass
-                    
+                    from frappe.utils.assets import clear_all_cache
+                    clear_all_cache()
+                    frappe.log_error("Cleared asset cache", "Whitelabel Debug")
                 except Exception as cache_err:
                     frappe.log_error(f"Error clearing cache: {str(cache_err)}", "Whitelabel Debug")
                 
-                # Verify file is accessible
-                import requests
-                try:
-                    site_url = frappe.utils.get_url()
-                    image_url = f"{site_url}/assets/whitelabel/images/login-background.PNG"
-                    response = requests.head(image_url, timeout=5)
-                    
-                    if response.status_code == 200:
-                        frappe.log_error(
-                            f"Image accessible: HTTP Status {response.status_code}, " +
-                            f"Content-Length: {response.headers.get('Content-Length', 'unknown')}",
-                            "Whitelabel Debug"
-                        )
-                    else:
-                        frappe.log_error(f"Image not accessible: HTTP Status {response.status_code}", "Whitelabel Debug")
-                except Exception as req_err:
-                    frappe.log_error(f"Error checking image URL: {str(req_err)}", "Whitelabel Debug")
-                
-                return {"success": True, "message": "Login background updated successfully"}
+                # Include the suffix in the response
+                return {
+                    "success": True, 
+                    "message": "Login background updated successfully",
+                    "suffix": result.get("suffix", 0)
+                }
             else:
                 return {"success": False, "message": "Failed to update background. Check Error Log for details."}
         else:
