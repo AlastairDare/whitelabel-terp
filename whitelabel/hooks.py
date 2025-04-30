@@ -33,3 +33,8 @@ fixtures = [
     {"dt": "Custom Field", "filters": [["Translation","source_text","like","%ERPNext%"]]},
     {"dt": "Website Settings", "filters": [["name", "=", "Website Settings"]]}
 ]
+
+# Add this line to your existing hooks
+app_init_events = [
+    "whitelabel.setup_app_logo"
+]
