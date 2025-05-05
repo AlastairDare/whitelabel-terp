@@ -1,3 +1,112 @@
-.footer-powered{
-	display: none!important;
+.footer-powered {
+    display: none !important;
+}
+
+body {
+    background: url('/assets/whitelabel/images/login-background.PNG') no-repeat center center fixed !important;
+    background-size: cover !important;
+}
+
+/* Comprehensive navbar hiding */
+body[data-route="login"] .navbar,
+[data-route="login"] .navbar,
+.for-login .navbar,
+.navbar-default,
+body[data-route="login"] header,
+[data-route="login"] header,
+nav.navbar.navbar-light.navbar-expand-lg,
+.navbar.navbar-light.navbar-expand-lg,
+nav[class*="navbar"],
+.navbar-light {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Target container within navbar */
+.container .navbar-brand,
+.container .navbar-toggler,
+#navbarSupportedContent,
+#language-switcher {
+    display: none !important;
+}
+
+/* Darker login text */
+.page-card-head h4 {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
+}
+
+/* Remove top spacing */
+body[data-route="login"] {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Remove any residual header space */
+body[data-route="login"] .page-content {
+    margin-top: 0 !important;
+    padding-top: 2rem !important;
+}
+
+body[data-route="login"] .page-content-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Make the login form container slightly transparent */
+.for-login .login-content.page-card {
+    background: rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 2;
+}
+
+/* Optional: Add overlay for better text readability */
+body[data-route="login"]::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+}
+
+/* Ensure the login sections stay above overlay */
+.for-login,
+.for-email-login,
+.for-signup,
+.for-forgot {
+    position: relative;
+    z-index: 2;
+}
+
+/* Additional hiding techniques */
+.web-footer {
+    display: none !important;
+}
+
+#navbar-breadcrumbs {
+    display: none !important;
+}
+
+[data-route="login"] .main-section {
+    margin-top: 0 !important;
+}
+
+/* Hide any flex containers that might be holding the navbar */
+.flex[data-route="login"],
+div.flex {
+    display: none !important;
+}
+
+/* Ensure no space at top of page */
+[data-path="login"],
+div[data-page-route="login"],
+#page-login {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }

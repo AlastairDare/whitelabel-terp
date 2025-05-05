@@ -6,6 +6,9 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe.installer import update_site_config
+import os
+import shutil
+from frappe.utils import get_files_path
 
 class WhitelabelSetting(Document):
 	def validate(self):
@@ -58,6 +61,37 @@ class WhitelabelSetting(Document):
 		system_settings_doc.email_footer_address = self.email_footer_address
 		system_settings_doc.disable_standard_email_footer = self.disable_standard_footer
 		system_settings_doc.hide_footer_in_auto_email_reports = self.disable_standard_footer
-
-
-		
+	
+	def copy_background_to_assets(self):
+		"""Copy the background image to assets folder whenever whitelabel settings is saved"""
+		if self.background_image:
+			try:
+				# Get the source file path
+				source_path = os.path.join(get_files_path(), os.path.basename(self.background_image))
+				
+				# Get the app path for whitelabel
+				app_path = frappe.get_app_path('whitelabel')
+				
+				# Create the destination directory in the app's public folder
+				public_path = os.path.join(app_path, 'public', 'images')
+				os.makedirs(public_path, exist_ok=True)
+				
+				# Set destination path with fixed filename
+				dest_path = os.path.join(public_path, 'login-background.PNG')
+				
+				# Delete existing file if it exists
+				if os.path.exists(dest_path):
+					os.remove(dest_path)
+				
+				# Copy the file
+				shutil.copy2(source_path, dest_path)
+				
+				import time
+				timestamp = int(time.time())
+				
+				frappe.db.commit()
+				return {"success": True, "timestamp": timestamp}
+			except Exception as e:
+				frappe.log_error(f"Failed to copy background image: {str(e)}")
+				return False
+		return False

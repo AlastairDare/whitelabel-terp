@@ -3,6 +3,7 @@ import frappe
 import json
 from frappe.utils import floor, flt, today, cint
 from frappe import _
+import time
 
 def whitelabel_patch():
 	#delete erpnext welcome page 
@@ -84,3 +85,29 @@ def show_update_popup_update():
 	if update_message:
 		frappe.msgprint(update_message, title=_("New updates are available"), indicator='green')
 		cache.srem("update-user-set", user)
+  
+@frappe.whitelist()
+def update_login_background():
+    """Update the login background image from Whitelabel Setting"""
+    try:
+        doc = frappe.get_doc("Whitelabel Setting")
+        
+        if doc.background_image:
+            result = doc.copy_background_to_assets()
+            
+            if result and isinstance(result, dict) and result.get("success"):
+                # Clear cache
+                frappe.clear_cache()
+                
+                return {
+                    "success": True, 
+                    "message": "Login background updated successfully",
+                    "timestamp": result.get("timestamp", int(time.time()))
+                }
+            else:
+                return {"success": False, "message": "Failed to update background"}
+        else:
+            return {"success": False, "message": "No background image set"}
+    except Exception as e:
+        frappe.log_error(f"Failed to update login background: {str(e)}")
+        return {"success": False, "message": str(e)}

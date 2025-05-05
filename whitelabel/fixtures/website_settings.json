@@ -1,0 +1,10 @@
+[
+    {
+      "doctype": "Website Settings",
+      "name": "Website Settings",
+      "app_name": "T-ERP",
+      "disable_signup": 1,
+      "show_footer_on_login": 0,
+      "app_logo": "/files/T-ERP Logo New.svg"
+    }
+  ]
